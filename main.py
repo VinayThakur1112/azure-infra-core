@@ -144,18 +144,9 @@ def interactive_creation(cfg):
         status("✅ Delete operation completed successfully.", "success")
 
     if a == "3":
-        # Fetch resource group and location directly from config
-        # rg_name = input(f"Resource group name [{rg_name or 'none'}]: ").strip() 
-        rg_config = cfg.get("resource_group", {})
-        subscription_id = cfg.get("subscription_id", {})
-        rg_name = rg_config.get("name")
-        location = rg_config.get("location", "eastus")
-        print(f"rg_name: {rg_name}")
-        print(f"location: {location}")
-        
-        status(f"🚀 Deleting resource group '{rg_name}' in '{location}'...", "action")
-        delete_resource_group(rg_name, subscription_id)
-        status("✅ Delete operation completed successfully.", "success")
+        status(f"🚀 Creating virtual environment", "action")
+        create_vm(cfg)
+        status("✅ Virtual environment.", "success")
 
 
 
