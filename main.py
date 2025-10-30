@@ -15,7 +15,7 @@ import os
 from colorama import Fore, Style, init
 
 # Import resource functions (assumes azure_resource_group.py exists in same folder)
-from infra.resource_group import create_resource_group, delete_resource_group
+from resource_group import create_resource_group, delete_resource_group
 
 # Initialize colorama
 init(autoreset=True)
@@ -24,9 +24,8 @@ init(autoreset=True)
 # -----------------------
 # Config loader
 # -----------------------
-def load_app_config():
-    # TODO change the config file to config.json
-    config_path = os.path.join(os.path.dirname(__file__), "config", "config_dev.json")
+def load_app_config(config_file):
+    config_path = os.path.join(config_file)
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Config file not found: {config_path}")
     with open(config_path, "r") as f:
@@ -111,29 +110,30 @@ def deploy_model(env_name, model_name, cfg):
 # -----------------------
 # Interactive flows
 # -----------------------
-def interactive_menu(cfg):
+def interactive_menu():
     print()
     status("Interactive mode enabled.", "info")
     # choose service
-    print("Select service:")
-    print(f"  1) Infra Service")
-    print(f"  2) Pipeline Service")
-    print(f"  3) Deployment Service")
+    print("Select project:")
+    print(f"  1) my-mlops")
+    print(f"  2) my-llm")
+    print(f"  3) guest-sense-app")
     choice = input(f"\nEnter choice [1-3] (default 1): ").strip() or "1"
 
-    if choice not in ("1", "2", "3"):
+    if choice not in ("1", "2", "3", "4"):
         status("Invalid choice. Exiting.", "error")
         return
 
     if choice == "1":
-        interactive_resource_flow(cfg)
-    elif choice == "2":
-        interactive_pipeline_flow(cfg)
-    else:
-        interactive_model_flow(cfg)
+        interactive_mymlops_project()
 
 
-def interactive_resource_flow(cfg):
+
+def interactive_mymlops_project():
+    # TODO comment dev file for production
+    # cfg = load_app_config("config_mymlops.json")
+    cfg = load_app_config("config_mymlops_dev.json")
+
     print_header_for("resource")
     env_name = input(f"Environment [{cfg.get('default_env', 'dev')}]: ").strip() \
         or cfg.get("default_env", "dev")
@@ -203,20 +203,12 @@ def interactive_model_flow(cfg):
 # Entry point
 # -----------------------
 def main():
-    try:
-        cfg = load_app_config()
-        print(f"{Fore.LIGHTBLACK_EX} Configuration load done")
-
-    except Exception as e:
-        print(f"{Fore.RED}Failed to load config: {e}{Style.RESET_ALL}")
-        sys.exit(1)
-
-    is_interactive = bool(cfg.get("interactive", False))
+    is_interactive = True
     print(f"{Fore.LIGHTBLACK_EX} is_interactive: {is_interactive}")
 
     # If interactive mode enabled and no CLI args, run interactive menu
     if is_interactive and len(sys.argv) == 1:
-        interactive_menu(cfg)
+        interactive_menu()
         return
 
     # Non-interactive: expect CLI args (service action ...)
