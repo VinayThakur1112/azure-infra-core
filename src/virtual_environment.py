@@ -123,7 +123,7 @@ def create_vm(cfg):
                 image_reference=ImageReference(
                     publisher="Canonical",
                     offer="UbuntuServer",
-                    sku="22_04-lts-gen2",
+                    sku="20.04-LTS",
                     version="latest",
                 ),
                 os_disk=OSDisk(
@@ -155,7 +155,7 @@ def create_vm(cfg):
         creation = compute_client.virtual_machines.begin_create_or_update(
             resource_group, vm_name, vm_parameters
         )
-        creation.result()
+        vm_result = creation.result()
         created_resources.append(("vm", vm_name))
 
         print(f"✅ VM '{vm_name}' created successfully in {location}.")
